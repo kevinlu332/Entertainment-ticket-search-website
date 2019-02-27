@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <!-- Optional JavaScript -->
+    <!-- I have put it to the buttom of html -->
+
+    <!-- angularJS-->
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-animate.js"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0rc1/angular-route.min.js"></script>
+    <script src = "https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-aria.min.js"></script>
+    <script src = "https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-messages.min.js"></script>
+    <script src = "https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.js"></script>
+    <link rel = "stylesheet"
+          href = "https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.css">
+
+    <!-- google service-->
+    <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyA8XjdOsEdYtgaETUMOuR8A20puTbTGVp0&libraries=visualization,drawing,geometry,places"></script>
+    <!-- ng-map reference-->
+
+    <script src="/javascripts/ng-map.min.js"></script>
+    <!-- icons from google fonts-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    <!-- may also need a CSS file -->
+
+    <!-- google api key= AIzaSyA8XjdOsEdYtgaETUMOuR8A20puTbTGVp0  -->
+    <!-- TM api key= yGT4UZmzzJAMkAAHwapvuMWivbUe4l79  -->
+    <!-- songkick api key= A2koShMNjLSEOSeG  -->
+    <!--spotify-->
+    <!--Client ID 6a496224707743ca893bbb0ba2520a06-->
+    <!--Client Secret 24c2416154984e3aba57e147a4eb5a84-->
+    <title>Homework 8</title>
+
+    <style type="text/css">
+        .material-icons.yellow { color: yellow; }
+        .material-icons.md-18 { font-size: 18px; }
+        .material-icons.md-24 { font-size: 24px; }
+        .material-icons.md-36 { font-size: 36px; }
+        .material-icons.md-48 { font-size: 48px; }
+        .angular-google-map-container {
+            height: 600px;
+            width: 100%;
+            position: absolute;
+        }
+    </style>
+</head>    <!-- This is the head with links  -->
+<body ng-app="bodyApp"   ng-controller = "bodyContrlr">
+<div class = "container bg-light">
+    <h5 class="display-5 text-center">Entertainment Event Ticket Search</h5>
+    <form class=" bg-light" name="firstpageUpperform" ng-submit = "startSearch()">
+
+
+        <div class="form-group row required">
+            <span class=" offset-sm-2 col-sm-2"> Keyword </span>
+            <div class="col-sm-8" >
+                <input type="text"  class="form-control" name="keyword" id="Keyword"  ng-model="form.keyword" placeholder="Enter artist, Team or Event Name (eg. Lakers)" ng-required="true">
+                <p class="error validationerror" style="color: rgb(255,0,0)" ng-show= "firstpageUpperform.keyword.$invalid && firstpageUpperform.keyword.$dirty">Please enter a keyword.</p>
+            </div>
+        </div>
+        <div class=" form-group row required">
+            <span class=" offset-sm-2 col-sm-2" > Category </span>
+            <div class="col-sm-4" >
+                <select  class="form-control" id="categoryDropdown"  ng-model="userCategory">
+                    <option value = "All">All</option>
+                    <option value = "Music">Music</option>
+                    <option value = "Sports">Sports</option>
+                    <option value = "ArtsTheatre">Arts &amp; Theatre</option>
+                    <option value = "Film">Film</option>
+                    <option value = "Miscellaneous">Miscellaneous</option>
+                </select>
+            </div>
+        </div>
+        <div class=" form-group row ">
+            <span class="offset-sm-2 col-sm-2"> Distance </span>
+            <div class="col-sm-2" >
+                <input type="number"  class="form-control" name="distance" id="distance"  ng-model="formDistance" placeholder="10">
+            </div>
+            <div class="col-sm-3" >
+                <select  class="form-control" id="distanceDropdown"  ng-model ="distanceUnitInputted">
+                    <option value = "miles" selected>Miles</option>
+                    <option value = "km">Kilometers</option>
+                </select>
+            </div>
+        </div>
+
+        <div class=" form-group row ">
+            <span class="control-label offset-sm-2 col-sm-2"> From </span>
+            <div class="col-sm-4 row">
+                <label ><input type="radio" name="fromwhere" value="Here" ng-model="location" id="fromHere"  onclick="disableTheRadio()">
+                    Current location</label>
+
+
+                <span ><input type="radio" name="fromwhere" value="location" id="OtherLocRadio" ng-model="location" onclick="disableTheRadio()"> Other. Please specify:</span>
+
+            </div>
+        </div>
+        <div class=" form-group row offset-sm-4">
+            <input class=" form-control col-sm-10"  type="text" name="other_location" ng-model="theOtherLoc" id="theOtherLoc"  disabled="true" required>
+
+            <span style="color: rgb(255,0,0)" class="error validationerror" ng-show=" location=='location' && firstpageUpperform.other_location.$invalid && firstpageUpperform.other_location.$dirty">Please enter a location.</span>
+
+        </div>
+
+        <div class="form-group row">
+            <div class="offset-sm-2 ">
+                <button type="submit" class=" btn btn-primary"  ng-disabled = " form.keyword==undefined ||  (firstpageUpperform.keyword.$invalid && firstpageUpperform.keyword.$dirty) || (location=='location' && theOtherLoc.length==null )" >
+                    <i class="material-icons md-18">search</i> Search</button>
+                <button type="reset" class="btn btn-default" ng-click="clearAll()">
+                    <i class="material-icons md-18">clear_all</i> Clear</button>
+            </div>
+        </div>
+
+    </form>
+
+</div>   <!-- This is the form  -->
+
+<div class="container text-center">
+    <button  class="btn btn-primary" id="resultsBut" ng-click="FtoR()" onclick="toResults()">Results</button>
+    <button  class="btn btn-link" id="favBut" ng-click="RtoF()" onclick="toFav()">Favorites</button>
+
+</div>   <!-- This is fav&results -->
+
+<!-- next, make the first page table-->
+<div class="container listPosition"  id="result" ng-show="show_detail==false && showFav==false">
+    <div class="progress mt-5" ng-show="progressbar" ng-model ="progressbar">
+        <div class="progress-bar  progress-bar-animated progress-bar-striped" style="width:50%"></div>
+    </div> <!-- This is progress bar -->
+    <div class="container">
+        <div class="row justify-content-end">
+            <button class="btn btn-light"  ng-disabled="!details_status" ng-click="show_recent_detail()" ng-show="showDetailsBut">Details<i class="material-icons"> chevron_right</i></button>
+        </div>
+    </div> <!-- This is detail button -->
+    <div class="container" ng-show="tableStatustext=='INVALID_REQUEST'">
+        <div class="alert alert-danger">
+            Failed to get search results.
+        </div>
+    </div>  <!-- This is failed result -->
+    <div class="container" ng-show="tableStatustext2=='No results'">
+        <div class="alert alert-warning">
+            No records.
+        </div>
+    </div> <!-- This is no record -->
+    <div class="container pt-1" ng-show="tableStatustext2 != 'No results' && tableStatustext!='INVALID_REQUEST' && tableStatustext2 !=undefined && (show_detail!=true)&&(table1Content!=undefined)&&(showTable!=false)" style="overflow-x:auto">
+        <table class="table table-hover">
+            <tr>
+                <th>#</th>
+                <th>Date</th>
+                <th>Event</th>
+                <th>Category</th>
+                <th>Venue Info</th>
+                <th>Favorite</th>
+            </tr>
+            <tr ng-repeat="x in table1Content" ng-if="table1Content!=undefined">
+                <td><strong>{{$index+1}}</strong></td>
+                <td>{{x.Date}}</td>
+                <td data-toggle="tooltip" data-placement="bottom" title={{x.Event}}"><a href ng-click='getDetails(x )'>{{x.Event}}</a></td>
+                <td>{{x.Category}}</td>
+                <td>{{x.VenueInfo}}</td>
+                <td><button class="btn btn-light" ng-click="set_fav(x)"> <i class="material-icons" id="{{x.id}}">star_border</i></button></td>
+                <!--     <i class="material-icons yellow" id="{{x.id}}">star </i>    -->
+
+            </tr>
+        </table>
+
+    </div> <!-- This is the table -->
+
+
+</div>
+
+<!-- next, make the favourite part-->
+<div class="container" id="favourite" ng-show="show_detail==false && showFav==true" >
+    <div class="container" ng-hide="hasfavItems" >
+        <div class="alert alert-warning">
+            No records.
+        </div>
+    </div>
+    <div class="container">
+        <div class="row justify-content-end">
+            <button class="btn btn-light" ng-show="hasfavItems" ng-disabled="!d_status" ng-click="recent_detail()">Details<i class="material-icons"> chevron_right</i></button>
+        </div>
+    </div>
+    <div class="container pt-1"  ng-show="hasfavItems" style="overflow-x:auto">
+        <table class="table table-hover">
+            <tr>
+                <th>#</th>
+                <th>Date</th>
+                <th>Event</th>
+                <th>Category</th>
+                <th>Venue Info</th>
+                <th>Favorite</th>
+            </tr>
+            <tr ng-repeat="(id,x) in favouriteItems" id="fav_{{x.id}}" ng-if="favouriteItems!=undefined" >
+                <td><strong>{{$index+1}}</strong></td>
+                <td>{{x.Date}}</td>
+                <td data-toggle="tooltip" data-placement="bottom" title={{x.Event}}"><a href ng-click='getDetails(x)'>{{x.Event}}</a></td>
+                <td>{{x.Category}}</td>
+                <td>{{x.VenueInfo}}</td>
+                <td><button class="btn btn-light" ng-click="remove_fav(x)"> <i class="material-icons">delete</i></button></td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<!-- next, make the detail page-->
+<div class="container detailPosition" ng-show="show_detail" >
+    <h2 class="d-flex justify-content-center mt-4">{{d_event}}</h2>
+    <div class="row d-flex justify-content-end">
+        <button ng-click="ListFunction()" class="btn btn-light mr-auto p-1" ><i class="material-icons"> chevron_left</i> List </button>
+        <a href="{{twitter_text}}" target="_blank"><button class="btn btn-primary"><img src="http://csci571.com/hw/hw8/Images/Twitter.png" style="width: 40px;height: 40px"></button></a>
+
+        <button class="btn btn-light" ng-click="set_fav(current_x)" onclick="runit()" > <i class="material-icons" id="D_star">star_border</i></button>
+        <script>
+            function runit(){
+                if(document.getElementById('D_star').classList.contains("yellow")){
+                    document.getElementById('D_star').classList.remove("yellow");
+                    document.getElementById('D_star').innerHTML = "star_border";
+                }
+                else {
+                    document.getElementById('D_star').innerHTML = "star";
+                    document.getElementById('D_star').classList.add("yellow");
+                }
+            }
+        </script>
+
+    </div> <!-- top buttons -->
+    <div class="container">
+        <ul class="justify-content-end nav nav-tabs ">
+            <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#Event">Event</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#Artist/Teams">Artist/Teams</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#Venue">Venue</a>
+            </li>
+            <!--<li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#UpcomingEvents">Upcoming Events</a>
+            </li>-->
+        </ul> <!-- nav Tab list names -->
+
+        <div class="tab-content">
+            <div style="overflow-x:auto" id="Event" class="container tab-pane active"><br>
+                <table class="table table-striped">
+                    <tr ng-if="d_AT != undefined"><th>Artist/team(s)</th><td >{{d_AT}}</td></tr>
+                    <tr ng-if="d_Venue != undefined"><th>Venue</th><td >{{d_Venue}}</td></tr>
+                    <tr ng-if="d_Time!= undefined"><th>Time</th><td >{{d_Time}}</td></tr>
+                    <tr ng-if="d_Category != undefined"><th>Category</th><td >{{d_Category}}</td></tr>
+                    <tr ng-if="d_PriceRange != undefined"><th>Price Range</th><td >{{d_PriceRange}}</td></tr>
+                    <tr ng-if="d_TicketStatus != undefined"><th>Ticket Status</th><td >{{d_TicketStatus}}</td></tr>
+                    <tr ng-if="d_BTA!= undefined"><th>Buy ticket At</th><td ><a href="{{d_BTA}}" target="_blank">Ticketmaster </a></td></tr>
+                    <tr ng-if="d_SeatMap!= undefined"><th>Seat Map</th><td ><a data-target="#myModal" data-toggle="modal" href="" >View Image</a>
+                        <div class="modal" id="myModal">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <!-- Modal Header -->
+                                    <div class="modal-header">
+                                        <h4 class="modal-title">View Seat Map</h4>
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    </div>
+                                    <!-- Modal body -->
+                                    <div class="modal-body">
+                                        <a href="{{d_SeatMap}}" target="_blank"><img ng-src="{{d_SeatMap}}" style="width: 100%; height: 100%;"></a>
+                                    </div>
+                                    <!-- Modal footer -->
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    </tr>
+                </table>
+            </div> <!-- Event Tab -->
+
+            <div class="container tab-pane fade" id="Artist/Teams">
+                <div class ="container" ng-repeat="y in d_attract_names">
+                    <h5 class="d-flex justify-content-center mt-4">{{y}}</h5>
+                    <table class="table table-striped" ng-show="d_Spotify[$index][4]">
+                        <tr><th>Name</th><td >{{d_Spotify[$index][0]}}</td></tr>
+                        <tr><th>Followers</th><td >{{d_Spotify[$index][1]}}</td></tr>
+                        <tr><th>Popularity</th><td >{{d_Spotify[$index][2]}}</td></tr>
+                        <tr><th>Check At</th><td><a ng-href="{{d_Spotify[$index][3]}}">Spotify</a></td></tr>
+                    </table>
+                    <div class="card-columns p-2" >
+                        <div class="card" ng-repeat = "photoUrl in d_PhotosUrl[$index]" >
+
+                            <a href="{{photoUrl}}" target="_blank">
+                                <img class="card-img" ng-src="{{photoUrl}}" >
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- Artist/Teams Tab -->
+
+            <div id="Venue" class="container tab-pane fade"><br>
+                <table class="table table-striped">
+                    <tr ng-if="d_address != undefined"><th>Address</th><td >{{d_address}}</td></tr>
+                    <tr ng-if="d_city != undefined"><th>City</th><td >{{d_city}}</td></tr>
+                    <tr ng-if="Phone!= undefined"><th>Phone Number</th><td >{{Phone}}</td></tr>
+                    <tr ng-if="openHours != undefined"><th>Open Hours</th><td >{{openHours}}</td></tr>
+                    <tr ng-if="gRule != undefined"><th>General Rule</th><td >{{gRule}}</td></tr>
+                    <tr ng-if="cRule != undefined"><th>Child Rule</th><td >{{cRule}}</td></tr>
+                </table>
+                <div ng-if="vlat!=undefined" class="container" >
+                    <ng-map default-style="true" zoom="15" center="[{{vlat}}, {{vlon}}]">
+                        <marker position="{{vlat}}, {{vlon}}" title="Hello World!" ></marker>
+                    </ng-map>
+                    <p></p>
+                </div>
+
+            </div> <!-- Venue Tab -->
+
+            <!--<div id="UpcomingEvents" class="container tab-pane fade"><br>
+                <table class="table table-striped">
+                    <tr>hello!</tr>
+                </table>
+            </div>--><!-- Upcoming Events Tab -->
+        </div>  <!-- 4 tab contents part -->
+
+    </div>    <!-- lower information part -->
+</div>
+
+
+<!-- my codes -->
+<script src="/javascripts/allMyJSFunctions.js"></script>
+<script src="/javascripts/AngularJSFnc.js"></script>
+
+</body>
+</html>
